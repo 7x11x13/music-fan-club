@@ -4,11 +4,25 @@
 		<meta charset="utf-8">
 		<title>official music fan club</title>
 		<style>
-			body { margin: 0; background-color: black}
+			body { margin: 0; background-color: black; }
 			canvas { display: block; }
+            .ytplayer { pointer-events: none; }
 		</style>
 	</head>
 	<body>
+        <script>
+            onPlayerStateChange = function (event) {
+                console.log(event);
+            }
+            onYouTubeIframeAPIReady = function () {
+                console.log('ready');
+                ytplayer = new YT.Player('ytplayer', {
+                    events: {
+                        'onStateChange': onPlayerStateChange
+                    }
+                });
+            };
+        </script>
 		<script type="module">
             import * as THREE from 'https://threejs.org/build/three.module.js';
             import { CSS3DRenderer, CSS3DObject } from 'https://threejs.org/examples/jsm/renderers/CSS3DRenderer.js';
@@ -23,13 +37,18 @@
             let ytEmbed = null;
             let scene, CSSscene, camera, renderer, CSSrenderer, composer;
 
+            // constants
+            const playlistID = 'UU1YTajqhUd01VO-yr5bL08A';
+            const videoWidthPx = 480;
+            const videoHeightPx = 360;
+
             window.addEventListener( 'resize', onWindowResize, false );
             window.addEventListener( 'mousemove', onMouseMove, false );
 
             async function init() {
+
                 scene = new THREE.Scene();
                 CSSscene = new THREE.Scene();
-                CSSscene.scale.set(0.005, 0.005, 0.005);
 
                 camera = new THREE.PerspectiveCamera( 120, window.innerWidth / window.innerHeight, 0.1, 1000 );
                 camera.position.set(0, 0, 1);
@@ -57,22 +76,26 @@
                 scene.add( plane );
                 
                 // youtube embed
-                const id = 'Xxg9gmnzEDo';
-                const playlist = 'UU1YTajqhUd01VO-yr5bL08A';
                 const div = document.createElement( 'div' );
-                div.style.width = '480px';
-                div.style.height = '360px';
+                div.style.width = `${videoWidthPx}px`;
+                div.style.height = `${videoHeightPx}px`;
                 div.style.backgroundColor = '#000';
                 const iframe = document.createElement( 'iframe' );
-                iframe.style.width = '480px';
-                iframe.style.height = '360px';
+                iframe.id = 'ytplayer';
+                iframe.style.width = `${videoWidthPx}px`;
+                iframe.style.height = `${videoHeightPx}px`;
                 iframe.style.border = '0px';
-                iframe.src = 'https://youtube.com/embed/videoseries?list=UU1YTajqhUd01VO-yr5bL08A&rel=0&controls=0&autoplay=1';
+                iframe.src = `https://youtube.com/embed/videoseries?list=${playlistID}&rel=0&controls=0&autoplay=1&enablejsapi=1&playsinline=1`;
                 iframe.allow = 'accelerometer; autoplay; encrypted-media; gyroscope;';
                 div.appendChild( iframe );
                 ytEmbed = new CSS3DObject( div );
                 ytEmbed.position.set(0, 0, 0);
                 CSSscene.add( ytEmbed );
+
+                const tag = document.createElement('script');
+                tag.src = "https://www.youtube.com/iframe_api";
+                const firstScriptTag = document.getElementsByTagName('script')[0];
+                firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
                 
                 // postprocessing effects
                 const outlinePass = new OutlinePass(new THREE.Vector2(window.innerWidth, window.innerHeight), scene, camera, [plane]);
@@ -120,6 +143,20 @@
                     const visHeight = 2 * Math.tan( vFOV / 2 );
                     const visWidth = visHeight * camera.aspect;
                     plane.scale.set((width - 40) / width * visWidth, (height - 40) / height * visHeight, 1);
+                }
+                if (CSSrenderer != null) {
+                    const vFOV = THREE.MathUtils.degToRad( camera.fov );
+                    const visHeight = 2 * Math.tan( vFOV / 2 );
+                    const visWidth = visHeight * camera.aspect;
+                    if (visHeight > visWidth) {
+                        // fit to 1/3rd width
+                        const scale = visWidth / videoWidthPx / 3;
+                        CSSscene.scale.set(scale, scale, scale);
+                    } else {
+                        // fit to 1/3rd height
+                        const scale = visHeight / videoHeightPx / 3;
+                        CSSscene.scale.set(scale, scale, scale);
+                    }
                 }
             }
 
