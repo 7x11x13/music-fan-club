@@ -58,6 +58,7 @@
                 
                 // youtube embed
                 const id = 'Xxg9gmnzEDo';
+                const playlist = 'UU1YTajqhUd01VO-yr5bL08A';
                 const div = document.createElement( 'div' );
                 div.style.width = '480px';
                 div.style.height = '360px';
@@ -66,7 +67,7 @@
                 iframe.style.width = '480px';
                 iframe.style.height = '360px';
                 iframe.style.border = '0px';
-                iframe.src = [ 'https://www.youtube.com/embed/', id, '?rel=0&controls=0&showinfo=0&autoplay=1' ].join( '' );
+                iframe.src = 'https://youtube.com/embed/videoseries?list=UU1YTajqhUd01VO-yr5bL08A&rel=0&controls=0&showinfo=0&autoplay=1&modestbranding=1';
                 iframe.allow = 'accelerometer; autoplay; encrypted-media; gyroscope;';
                 div.appendChild( iframe );
                 ytEmbed = new CSS3DObject( div );
