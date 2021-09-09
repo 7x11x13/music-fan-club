@@ -48,6 +48,7 @@
             const playlistID = 'UU1YTajqhUd01VO-yr5bL08A';
             const videoWidthPx = 480;
             const videoHeightPx = 360;
+            const videoIDRegex = /[?&]v=([A-Za-z0-9_-]{11})/;
 
             window.addEventListener( 'resize', onWindowResize, false );
             window.addEventListener( 'mousemove', onMouseMove, false );
@@ -92,6 +93,17 @@
                 iframe.allow = 'accelerometer; autoplay; encrypted-media; gyroscope;';
                 div.appendChild( iframe );
                 ytEmbedObject = new CSS3DObject( div );
+                ytEmbedObject.visible = false;
+
+                // embed thumbnail (links to youtube page)
+                const videoLink = document.createElement( 'a' );
+                videoLink.id = 'videolink';
+                const thumbnail = document.createElement( 'img' );
+                thumbnail.id = 'thumbnail';
+                thumbnail.style.width = `${videoWidthPx}px`;
+                thumbnail.style.height = `${videoHeightPx}px`;
+                videoLink.appendChild(thumbnail);
+                ytEmbedObject.add(new CSS3DObject( videoLink ));
 
                 // embed buttons
                 const playButton = document.createElement( 'button' );
@@ -100,10 +112,8 @@
                 playButton.addEventListener('click', function (event) {
                     if (playButton.innerText === 'play') {
                         ytplayer.playVideo();
-                        playButton.innerText = 'pause';
                     } else {
                         ytplayer.pauseVideo();
-                        playButton.innerText = 'play';
                     }
                 });
 
@@ -114,7 +124,21 @@
                 CSSplane = new THREE.Group();
                 CSSplane.add( ytEmbedObject );
 
-                window.onPlayerStateChange = function (event) {}
+                window.onPlayerStateChange = function (event) {
+                    if (event.data === YT.PlayerState.PLAYING) {
+                        playButton.innerText = 'pause';
+                        const url = ytplayer.getVideoUrl();
+                        const link = document.getElementById('videolink');
+                        const image = document.getElementById('thumbnail');
+                        link.href = url;
+                        link.target = '_blank';
+                        const id = videoIDRegex.exec(url)[1];
+                        console.log(id);
+                        image.src = `https://img.youtube.com/vi/${id}/sddefault.jpg`
+                    } else if (event.data === YT.PlayerState.PAUSED) {
+                        playButton.innerText = 'play';
+                    }
+                }
                 window.onYouTubeIframeAPIReady = function () {
                     ytplayer = new YT.Player('ytplayer', {
                         events: {
