@@ -125,6 +125,7 @@
 		</style>
 	</head>
 	<body>
+        <script src="./data/playlist.js"></script>
 		<script type="module">
             import * as THREE from 'https://threejs.org/build/three.module.js';
             import { CSS3DRenderer, CSS3DObject } from 'https://threejs.org/examples/jsm/renderers/CSS3DRenderer.js';
@@ -133,6 +134,7 @@
             import { OutlinePass } from 'https://threejs.org/examples/jsm/postprocessing/OutlinePass.js';
             import { AfterimagePass } from 'https://threejs.org/examples/jsm/postprocessing/AfterimagePass.js';
 
+            let videoIndex = 0;
             let plane;
             let CSSplane;
             let planeXRot = 0;
@@ -141,7 +143,6 @@
             let stars = [];
 
             // constants
-            const playlistID = 'UU1YTajqhUd01VO-yr5bL08A';
             const videoWidthPx = 480;
             const videoHeightPx = 360;
             const videoIDRegex = /[?&]v=([A-Za-z0-9_-]{11})/;
@@ -230,7 +231,7 @@
                 iframe.style.width = `${videoWidthPx}px`;
                 iframe.style.height = `${videoHeightPx}px`;
                 iframe.style.border = '0px';
-                iframe.src = `https://www.youtube.com/embed/videoseries?list=${playlistID}&rel=0&controls=0&autoplay=1&enablejsapi=1&playsinline=1`;
+                iframe.src = `https://www.youtube.com/embed/${window.videoIDs[videoIndex]}?rel=0&controls=0&autoplay=1&enablejsapi=1&playsinline=1`;
                 iframe.allow = 'accelerometer; autoplay; encrypted-media; gyroscope;';
                 div.appendChild( iframe );
                 ytEmbedObject = new CSS3DObject( div );
@@ -239,10 +240,14 @@
                 // embed thumbnail (links to youtube page)
                 const videoLink = document.createElement( 'a' );
                 videoLink.id = 'videolink';
+                videoLink.href = `https://www.youtube.com/watch?v=${window.videoIDs[videoIndex]}`;
+                videoLink.target = '_blank';
                 const thumbnail = document.createElement( 'img' );
                 thumbnail.id = 'thumbnail';
+                thumbnail.style.opacity = 0.5;
                 thumbnail.style.width = `${videoWidthPx}px`;
                 thumbnail.style.height = `${videoHeightPx}px`;
+                thumbnail.src = `https://img.youtube.com/vi/${window.videoIDs[videoIndex]}/sddefault.jpg`;
                 videoLink.appendChild(thumbnail);
                 ytEmbedObject.add(new CSS3DObject( videoLink ));
 
@@ -276,7 +281,9 @@
                 createEmbedButton(
                     'prev',
                     function (event) {
-                        ytplayer.previousVideo();
+                        if (videoIndex > 0) {
+                            ytplayer.loadVideoById(window.videoIDs[--videoIndex]);
+                        }
                     },
                     0, -videoHeightPx/2 - 20, 0
                 );
@@ -284,7 +291,9 @@
                 createEmbedButton(
                     'next',
                     function (event) {
-                        ytplayer.nextVideo();
+                        if (videoIndex < window.videoIDs.length - 1) {
+                            ytplayer.loadVideoById(window.videoIDs[++videoIndex]);
+                        }
                     },
                     videoWidthPx/2 - embedButtonWidth/2, -videoHeightPx/2 - 20, 0
                 );
@@ -316,7 +325,6 @@
                         const link = document.getElementById('videolink');
                         const image = document.getElementById('thumbnail');
                         link.href = url;
-                        link.target = '_blank';
                         const id = videoIDRegex.exec(url)[1];
                         image.src = `https://img.youtube.com/vi/${id}/sddefault.jpg`
                         image.style.opacity = 1;
@@ -324,6 +332,11 @@
                         playButton.innerText = 'play';
                         const image = document.getElementById('thumbnail');
                         image.style.opacity = 0.5;
+                    } else if (event.data === YT.PlayerState.ENDED) {
+                        // load next video
+                        if (videoIndex < window.videoIDs.length - 1) {
+                            ytplayer.loadVideoById(window.videoIDs[++videoIndex]);
+                        }
                     }
                 }
                 window.onYouTubeIframeAPIReady = function () {
