@@ -7,6 +7,13 @@
 			body { margin: 0; background-color: black; }
 			canvas { display: block; }
             #ytplayer { pointer-events: none; }
+            #thumbnail {
+                box-shadow: 0 0 0px #ffffff;
+                transition: 0.3s;
+            }
+            #thumbnail:hover {
+                box-shadow: 0 0 5px #ffffff;
+            }
             button {
                 font-family: 'Courier New', monospace;
                 background-color: black;
@@ -106,20 +113,47 @@
                 ytEmbedObject.add(new CSS3DObject( videoLink ));
 
                 // embed buttons
-                const playButton = document.createElement( 'button' );
-                playButton.style.width = `${videoWidthPx}px`;
-                playButton.innerText = 'play';
-                playButton.addEventListener('click', function (event) {
-                    if (playButton.innerText === 'play') {
-                        ytplayer.playVideo();
-                    } else {
-                        ytplayer.pauseVideo();
-                    }
-                });
+                const embedButtonWidth = (videoWidthPx - 60)/3;
 
-                const playButtonObject = new CSS3DObject( playButton );
-                ytEmbedObject.add( playButtonObject );
-                playButtonObject.position.set(0, -videoHeightPx/2 - 20, 0);
+                function createEmbedButton(text, onclick, x, y, z) {
+                    const button = document.createElement( 'button' );
+                    button.style.width = `${embedButtonWidth}px`;
+                    button.innerText = text;
+                    button.addEventListener('click', onclick);
+                    const buttonObject = new CSS3DObject( button );
+                    ytEmbedObject.add ( buttonObject );
+                    buttonObject.position.set( x, y, z );
+                    return button
+                }
+
+                // play/pause button
+                const playButton = createEmbedButton(
+                    'play',
+                    function (event) {
+                        if (event.target.innerText === 'play') {
+                            ytplayer.playVideo();
+                        } else {
+                            ytplayer.pauseVideo();
+                        }
+                    }, 
+                    -videoWidthPx/2 + embedButtonWidth/2, -videoHeightPx/2 - 20, 0
+                );
+                // prev video button
+                createEmbedButton(
+                    'prev',
+                    function (event) {
+                        ytplayer.previousVideo();
+                    },
+                    0, -videoHeightPx/2 - 20, 0
+                );
+                // next video button
+                createEmbedButton(
+                    'next',
+                    function (event) {
+                        ytplayer.nextVideo();
+                    },
+                    videoWidthPx/2 - embedButtonWidth/2, -videoHeightPx/2 - 20, 0
+                );
 
                 CSSplane = new THREE.Group();
                 CSSplane.add( ytEmbedObject );
@@ -133,10 +167,12 @@
                         link.href = url;
                         link.target = '_blank';
                         const id = videoIDRegex.exec(url)[1];
-                        console.log(id);
                         image.src = `https://img.youtube.com/vi/${id}/sddefault.jpg`
+                        image.style.opacity = 1;
                     } else if (event.data === YT.PlayerState.PAUSED) {
                         playButton.innerText = 'play';
+                        const image = document.getElementById('thumbnail');
+                        image.style.opacity = 0.5;
                     }
                 }
                 window.onYouTubeIframeAPIReady = function () {
