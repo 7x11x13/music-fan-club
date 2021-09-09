@@ -6,23 +6,30 @@
 		<style>
 			body { margin: 0; background-color: black; }
 			canvas { display: block; }
-            .ytplayer { pointer-events: none; }
+            #ytplayer { pointer-events: none; }
+            button {
+                font-family: 'Courier New', monospace;
+                background-color: black;
+                color: white;
+                font-size: 18px;
+                outline: none;
+                border-color: #ffffff;
+                box-shadow: 0 0 5px #ffffff;
+                transition: color 0.3s, background-color 0.3s;
+            }
+            button:hover {
+                background-color: white;
+                color: black;
+                transition: color 0s, background-color 0s;
+            }
+            button:active {
+                border-style: outset;
+                background-color: black;
+                color: white;
+            }
 		</style>
 	</head>
 	<body>
-        <script>
-            onPlayerStateChange = function (event) {
-                console.log(event);
-            }
-            onYouTubeIframeAPIReady = function () {
-                console.log('ready');
-                ytplayer = new YT.Player('ytplayer', {
-                    events: {
-                        'onStateChange': onPlayerStateChange
-                    }
-                });
-            };
-        </script>
 		<script type="module">
             import * as THREE from 'https://threejs.org/build/three.module.js';
             import { CSS3DRenderer, CSS3DObject } from 'https://threejs.org/examples/jsm/renderers/CSS3DRenderer.js';
@@ -31,11 +38,11 @@
             import { OutlinePass } from 'https://threejs.org/examples/jsm/postprocessing/OutlinePass.js';
             import { AfterimagePass } from 'https://threejs.org/examples/jsm/postprocessing/AfterimagePass.js';
 
-            let plane = null;
+            let plane;
+            let CSSplane;
             let planeXRot = 0;
             let planeYRot = 0;
-            let ytEmbed = null;
-            let scene, CSSscene, camera, renderer, CSSrenderer, composer;
+            let scene, CSSscene, camera, renderer, CSSrenderer, composer, ytplayer, ytEmbedObject;
 
             // constants
             const playlistID = 'UU1YTajqhUd01VO-yr5bL08A';
@@ -45,7 +52,7 @@
             window.addEventListener( 'resize', onWindowResize, false );
             window.addEventListener( 'mousemove', onMouseMove, false );
 
-            async function init() {
+            function init() {
 
                 scene = new THREE.Scene();
                 CSSscene = new THREE.Scene();
@@ -65,14 +72,10 @@
                 CSSrenderer.domElement.appendChild(renderer.domElement);
 
                 document.body.appendChild(CSSrenderer.domElement);
-
-                composer = new EffectComposer( renderer );
-                composer.addPass( new RenderPass( scene, camera ) );
                 
                 // build scene
-                const geometry = new THREE.PlaneGeometry( 1, 1 );
                 const material = new THREE.MeshBasicMaterial( {color: 0x000000, side: THREE.DoubleSide} );
-                plane = new THREE.Mesh( geometry, material );
+                plane = new THREE.Mesh( new THREE.PlaneGeometry( 1, 1 ), material );
                 scene.add( plane );
                 
                 // youtube embed
@@ -85,19 +88,52 @@
                 iframe.style.width = `${videoWidthPx}px`;
                 iframe.style.height = `${videoHeightPx}px`;
                 iframe.style.border = '0px';
-                iframe.src = `https://youtube.com/embed/videoseries?list=${playlistID}&rel=0&controls=0&autoplay=1&enablejsapi=1&playsinline=1`;
+                iframe.src = `https://www.youtube.com/embed/videoseries?list=${playlistID}&rel=0&controls=0&autoplay=1&enablejsapi=1&playsinline=1`;
                 iframe.allow = 'accelerometer; autoplay; encrypted-media; gyroscope;';
                 div.appendChild( iframe );
-                ytEmbed = new CSS3DObject( div );
-                ytEmbed.position.set(0, 0, 0);
-                CSSscene.add( ytEmbed );
+                ytEmbedObject = new CSS3DObject( div );
 
+                // embed buttons
+                const playButton = document.createElement( 'button' );
+                playButton.style.width = `${videoWidthPx}px`;
+                playButton.innerText = 'play';
+                playButton.addEventListener('click', function (event) {
+                    if (playButton.innerText === 'play') {
+                        ytplayer.playVideo();
+                        playButton.innerText = 'pause';
+                    } else {
+                        ytplayer.pauseVideo();
+                        playButton.innerText = 'play';
+                    }
+                });
+
+                const playButtonObject = new CSS3DObject( playButton );
+                ytEmbedObject.add( playButtonObject );
+                playButtonObject.position.set(0, -videoHeightPx/2 - 20, 0);
+
+                CSSplane = new THREE.Group();
+                CSSplane.add( ytEmbedObject );
+
+                window.onPlayerStateChange = function (event) {}
+                window.onYouTubeIframeAPIReady = function () {
+                    ytplayer = new YT.Player('ytplayer', {
+                        events: {
+                            'onStateChange': onPlayerStateChange
+                        }
+                    });
+                };
+
+                CSSscene.add( CSSplane );
+
+                // load iframe API
                 const tag = document.createElement('script');
                 tag.src = "https://www.youtube.com/iframe_api";
                 const firstScriptTag = document.getElementsByTagName('script')[0];
                 firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
                 
                 // postprocessing effects
+                composer = new EffectComposer( renderer );
+                composer.addPass( new RenderPass( scene, camera ) );
                 const outlinePass = new OutlinePass(new THREE.Vector2(window.innerWidth, window.innerHeight), scene, camera, [plane]);
                 outlinePass.edgeStrength = 8;
                 outlinePass.visibleEdgeColor.set('#ffffff');
@@ -115,9 +151,9 @@
                     plane.rotation.x = (plane.rotation.x*5 + planeXRot) / 6;
                     plane.rotation.y = (plane.rotation.y*5 + planeYRot) / 6;
                 }
-                if (ytEmbed != null) {
-                    ytEmbed.rotation.x = (ytEmbed.rotation.x*5 + planeXRot) / 6;
-                    ytEmbed.rotation.y = (ytEmbed.rotation.y*5 + planeYRot) / 6;
+                if (CSSplane != null) {
+                    CSSplane.rotation.x = (CSSplane.rotation.x*5 + planeXRot) / 6;
+                    CSSplane.rotation.y = (CSSplane.rotation.y*5 + planeYRot) / 6;
                 }
                 CSSrenderer.render(CSSscene, camera);
                 composer.render(scene, camera);
@@ -148,14 +184,18 @@
                     const vFOV = THREE.MathUtils.degToRad( camera.fov );
                     const visHeight = 2 * Math.tan( vFOV / 2 );
                     const visWidth = visHeight * camera.aspect;
+                    let scale;
                     if (visHeight > visWidth) {
                         // fit to 1/3rd width
-                        const scale = visWidth / videoWidthPx / 3;
-                        CSSscene.scale.set(scale, scale, scale);
+                        scale = visWidth / videoWidthPx / 3;
                     } else {
                         // fit to 1/3rd height
-                        const scale = visHeight / videoHeightPx / 3;
-                        CSSscene.scale.set(scale, scale, scale);
+                        scale = visHeight / videoHeightPx / 3;
+                    }
+                    CSSscene.scale.set( scale, scale, scale );
+                    // move yt embed to 3/4ths the way up the screen
+                    if (ytEmbedObject != null) {
+                        ytEmbedObject.position.set( 0, visHeight / scale / 4, 0 );
                     }
                 }
             }
