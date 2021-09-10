@@ -20,6 +20,8 @@
                 font-weight: bolder;
                 text-align: left;
                 display: inline-block;
+                position: absolute;
+                bottom: 0;
             }
             #title:hover {
                 -webkit-text-stroke: 2px white;
@@ -349,10 +351,11 @@
                 title.href = `https://www.youtube.com/watch?v=${curVideoId}`;
                 title.target = '_blank';
                 title.style.width = `${videoWidthPx}px`;
+                title.style.left = `-${Math.floor(videoWidthPx/2)}px`;
                 titleDiv.appendChild( title );
                 const titleObject = new CSS3DObject( titleDiv );
                 ytEmbedObject.add( titleObject );
-                titleObject.position.set ( 0, videoHeightPx/2 + 20, 1);
+                titleObject.position.set ( 0, videoHeightPx/2 + 5, 1);
 
                 CSSplane = new THREE.Group();
                 CSSplane.add( ytEmbedObject );
