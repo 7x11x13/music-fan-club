@@ -134,6 +134,7 @@
             import { OutlinePass } from 'https://threejs.org/examples/jsm/postprocessing/OutlinePass.js';
             import { AfterimagePass } from 'https://threejs.org/examples/jsm/postprocessing/AfterimagePass.js';
 
+            let playing = false;
             let videoIndex = 0;
             let plane;
             let CSSplane;
@@ -150,46 +151,50 @@
             window.addEventListener( 'resize', onWindowResize, false );
             window.addEventListener( 'mousemove', onMouseMove, false );
 
-            function initStars() {
+            function getStarColor() {
+                if (Math.random() > 0.9) {
+                    if (Math.random() < 0.5) {
+                        // light pink/red
+                        return [1, 0.8 + Math.random()/20, 0.8 + Math.random()/20]
+                    } else {
+                        // light blue/purple
+                        return [0.8 + Math.random()/20, 0.8 + Math.random()/20, 1]
+                    }
+                } else {
+                    return [1, 1, 1]
+                }
+            }
 
-                // The loop will move from z position of -1000 to z position 1000, adding a random particle at each position. 
+            function initStars() {
                 for ( let z = -1000; z < 1000; z += 20 ) {
-        
-                    // Make a sphere (exactly the same as before). 
-                    const geometry   = new THREE.SphereGeometry(0.5, 32, 32)
+                    const geometry   = new THREE.SphereGeometry(0.5, 32, 32);
                     const material = new THREE.MeshBasicMaterial( {color: 0xffffff} );
                     const sphere = new THREE.Mesh(geometry, material)
         
-                    // This time we give the sphere random x and y positions between -500 and 500
                     sphere.position.x = Math.random() * 1000 - 500;
                     sphere.position.y = Math.random() * 1000 - 500;
-        
-                    // Then set the z position to where it is in the loop (distance of camera)
                     sphere.position.z = z;
-        
-                    // scale it up a bit
                     sphere.scale.x = sphere.scale.y = 2;
-        
-                    //add the sphere to the scene
-                    scene.add( sphere );
-        
-                    //finally push it to the stars array 
+                    scene.add(sphere);
                     stars.push(sphere); 
                 }
             }
 
             function animateStars() { 
-                        
-                // loop through each star
-                for( let i=0; i<stars.length; i++ ) {
-                    
+                for( let i=0; i<stars.length; i++ ) {  
                     const star = stars[i]; 
-                        
-                    // and move it forward dependent on the mouseY position. 
-                    star.position.z +=  i/10;
-                        
-                    // if the particle is too close move it to the back
-                    if(star.position.z>1000) star.position.z-=2000; 
+                    if (playing) {
+                        star.position.z +=  i/20;
+                    } else {
+                        star.position.z +=  i/40;
+                    }
+                    if(star.position.z>1000) {
+                        star.position.x = Math.random() * 1000 - 500;
+                        star.position.y = Math.random() * 1000 - 500;
+                        star.position.z-=2000;
+                        star.material.color.setRGB(...getStarColor());
+                        console.log(star.material.color);
+                    }
                     
                 }
             
@@ -320,6 +325,7 @@
 
                 window.onPlayerStateChange = function (event) {
                     if (event.data === YT.PlayerState.PLAYING) {
+                        playing = true;
                         playButton.innerText = 'pause';
                         const url = ytplayer.getVideoUrl();
                         const link = document.getElementById('videolink');
@@ -329,6 +335,7 @@
                         image.src = `https://img.youtube.com/vi/${id}/sddefault.jpg`
                         image.style.opacity = 1;
                     } else if (event.data === YT.PlayerState.PAUSED) {
+                        playing = false;
                         playButton.innerText = 'play';
                         const image = document.getElementById('thumbnail');
                         image.style.opacity = 0.5;
@@ -336,6 +343,8 @@
                         // load next video
                         if (videoIndex < window.videoIDs.length - 1) {
                             ytplayer.loadVideoById(window.videoIDs[++videoIndex]);
+                        } else {
+                            playing = false;
                         }
                     }
                 }
