@@ -12,12 +12,24 @@
                 box-shadow: 0 0 0px #ffffff;
                 transition: 0.3s;
             }
+            #title {
+                font-family: 'Courier New', monospace;
+                color: rgba(0, 0, 0, 0);
+                -webkit-text-stroke: 1px white;
+                font-size: 24px;
+                font-weight: bolder;
+                text-align: left;
+                display: inline-block;
+            }
+            #title:hover {
+                -webkit-text-stroke: 2px white;
+            }
             #thumbnail:hover {
                 box-shadow: 0 0 5px #ffffff;
             }
             button {
                 font-family: 'Courier New', monospace;
-                background-color: black;
+                background-color: rgba(0, 0, 0, 0);
                 color: white;
                 font-size: 18px;
                 outline: none;
@@ -234,6 +246,7 @@
                 scene.add( plane );
                 
                 // youtube embed
+                const curVideoId = window.playlistVideos[videoIndex].id;
                 const div = document.createElement( 'div' );
                 div.style.width = `${videoWidthPx}px`;
                 div.style.height = `${videoHeightPx}px`;
@@ -243,7 +256,7 @@
                 iframe.style.width = `${videoWidthPx}px`;
                 iframe.style.height = `${videoHeightPx}px`;
                 iframe.style.border = '0px';
-                iframe.src = `https://www.youtube.com/embed/${window.videoIDs[videoIndex]}?rel=0&controls=0&autoplay=1&enablejsapi=1&playsinline=1`;
+                iframe.src = `https://www.youtube.com/embed/${curVideoId}?rel=0&controls=0&autoplay=1&enablejsapi=1&playsinline=1`;
                 iframe.allow = 'accelerometer; autoplay; encrypted-media; gyroscope;';
                 div.appendChild( iframe );
                 ytEmbedObject = new CSS3DObject( div );
@@ -252,14 +265,14 @@
                 // embed thumbnail (links to youtube page)
                 const videoLink = document.createElement( 'a' );
                 videoLink.id = 'videolink';
-                videoLink.href = `https://www.youtube.com/watch?v=${window.videoIDs[videoIndex]}`;
+                videoLink.href = `https://www.youtube.com/watch?v=${curVideoId}`;
                 videoLink.target = '_blank';
                 const thumbnail = document.createElement( 'img' );
                 thumbnail.id = 'thumbnail';
                 thumbnail.style.opacity = 0.5;
                 thumbnail.style.width = `${videoWidthPx}px`;
                 thumbnail.style.height = `${videoHeightPx}px`;
-                thumbnail.src = `https://img.youtube.com/vi/${window.videoIDs[videoIndex]}/sddefault.jpg`;
+                thumbnail.src = `https://img.youtube.com/vi/${curVideoId}/sddefault.jpg`;
                 videoLink.appendChild(thumbnail);
                 ytEmbedObject.add(new CSS3DObject( videoLink ));
 
@@ -294,7 +307,7 @@
                     'prev',
                     function (event) {
                         if (videoIndex > 0) {
-                            ytplayer.loadVideoById(window.videoIDs[--videoIndex]);
+                            ytplayer.loadVideoById(window.playlistVideos[--videoIndex].id);
                         }
                     },
                     0, -videoHeightPx/2 - 20, 0
@@ -303,12 +316,13 @@
                 createEmbedButton(
                     'next',
                     function (event) {
-                        if (videoIndex < window.videoIDs.length - 1) {
-                            ytplayer.loadVideoById(window.videoIDs[++videoIndex]);
+                        if (videoIndex < window.playlistVideos.length - 1) {
+                            ytplayer.loadVideoById(window.playlistVideos[++videoIndex].id);
                         }
                     },
                     videoWidthPx/2 - embedButtonWidth/2, -videoHeightPx/2 - 20, 0
                 );
+
                 // volume slider
                 const sliderDiv = document.createElement( 'div' );
                 const slider = document.createElement( 'input' )
@@ -324,8 +338,21 @@
                 });
                 sliderDiv.appendChild( slider );
                 const sliderObject = new CSS3DObject( sliderDiv );
-                ytEmbedObject.add ( sliderObject );
+                ytEmbedObject.add( sliderObject );
                 sliderObject.position.set( -videoWidthPx/2 - 20, 0, 0 );
+
+                // title
+                const titleDiv = document.createElement( 'div' );
+                const title = document.createElement( 'a' );
+                title.id = 'title';
+                title.innerText = `${window.playlistVideos[videoIndex].title}`;
+                title.href = `https://www.youtube.com/watch?v=${curVideoId}`;
+                title.target = '_blank';
+                title.style.width = `${videoWidthPx}px`;
+                titleDiv.appendChild( title );
+                const titleObject = new CSS3DObject( titleDiv );
+                ytEmbedObject.add( titleObject );
+                titleObject.position.set ( 0, videoHeightPx/2 + 20, 1);
 
                 CSSplane = new THREE.Group();
                 CSSplane.add( ytEmbedObject );
@@ -335,8 +362,11 @@
                         playing = true;
                         playButton.innerText = 'pause';
                         const url = ytplayer.getVideoUrl();
+                        const title = document.getElementById('title');
                         const link = document.getElementById('videolink');
                         const image = document.getElementById('thumbnail');
+                        title.innerText = window.playlistVideos[videoIndex].title;
+                        title.href = url;
                         link.href = url;
                         const id = videoIDRegex.exec(url)[1];
                         image.src = `https://img.youtube.com/vi/${id}/sddefault.jpg`
@@ -348,8 +378,8 @@
                         image.style.opacity = 0.5;
                     } else if (event.data === YT.PlayerState.ENDED) {
                         // load next video
-                        if (videoIndex < window.videoIDs.length - 1) {
-                            ytplayer.loadVideoById(window.videoIDs[++videoIndex]);
+                        if (videoIndex < window.playlistVideos.length - 1) {
+                            ytplayer.loadVideoById(window.playlistVideos[++videoIndex].id);
                         } else {
                             playing = false;
                         }
@@ -431,17 +461,9 @@
                     if (visHeight > visWidth) {
                         // fit to 1/2 width
                         scale = visWidth / videoWidthPx / 2;
-                        // move yt embed to 3/4ths the way up the screen
-                        if (ytEmbedObject != null) {
-                            ytEmbedObject.position.set( 0, visHeight / scale / 4, 0 );
-                        }
                     } else {
                         // fit to 1/2 height
                         scale = visHeight / videoHeightPx / 2;
-                        // move yt embed to 3/4ths the way up the screen
-                        if (ytEmbedObject != null) {
-                            ytEmbedObject.position.set( 0, visHeight / scale / 4 - 40, 0 );
-                        }
                     }
                     CSSscene.scale.set( scale, scale, scale );
                 }
