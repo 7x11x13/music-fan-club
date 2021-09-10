@@ -380,7 +380,7 @@
                 composer.addPass( outlinePass );
                 composer.addPass( new AfterimagePass() );
                 
-                initStars();
+                if (!mobile) initStars();
 
                 onWindowResize();
             }
