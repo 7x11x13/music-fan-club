@@ -3,8 +3,164 @@
     <head>
         <meta charset="utf-8">
         <title>official music fan club</title>
+        <link rel="stylesheet" href="./css/style.css">
+        <style>
+            html, body {
+                margin: 0;
+                height: 100%;
+            }
+            #container {
+                display: flex;
+                padding: 40px;
+                flex-direction: column;
+                align-items: center;
+            }
+            button {
+                font-size: 24px;
+                flex: 1 1 160px;
+                margin: 0.25em;
+            }
+            #video {
+                flex-grow: 1;
+                padding: 40px;
+            }
+            #buttons {
+                display: flex;
+                flex-direction: row;
+                flex-wrap: wrap;
+                width: 100%;
+            }
+            #title {
+                bottom: auto;
+                position: static;
+            }
+            #thumbnail {
+                max-width: 100%;
+                max-height: 50vh;
+            }
+        </style>
     </head>
     <body>
-    mobile browser detected
+        <div id="container">
+            <div>
+                <div>
+                    <a id="title"></a>
+                </div>
+                <a id="videolink">
+                    <img id="thumbnail"></img>
+                </a>
+            </div>
+            <div id="buttons">
+                <button id="playButton">play</button>
+                <button id="prevButton">prev</button>
+                <button id="nextButton">next</button>
+            </div>
+        </div>
+        <script src="./data/playlist.js"></script>
+        <script>
+            // constants
+            const videoWidthPx = 0;
+            const videoHeightPx = 0;
+            const videoIDRegex = /[?&]v=([A-Za-z0-9_-]{11})/;
+
+            let playing = false;
+            let videoIndex = 0;
+            let ytplayer;
+
+            // youtube embed
+            const curVideoId = window.playlistVideos[videoIndex].id;
+            const iframe = document.createElement( 'iframe' );
+            iframe.id = 'ytplayer';
+            iframe.style.width = `${videoWidthPx}px`;
+            iframe.style.height = `${videoHeightPx}px`;
+            iframe.style.border = '0px';
+            iframe.src = `https://www.youtube.com/embed/${curVideoId}?rel=0&controls=0&autoplay=1&enablejsapi=1&playsinline=1`;
+            iframe.allow = 'accelerometer; autoplay; encrypted-media; gyroscope;';
+            document.body.appendChild( iframe );
+
+            // embed thumbnail (links to youtube page)
+            const videoLink = document.getElementById( 'videolink' );
+            videoLink.href = `https://www.youtube.com/watch?v=${curVideoId}`;
+            videoLink.target = '_blank';
+            const thumbnail = document.getElementById( 'thumbnail' );
+            thumbnail.style.opacity = 0.5;
+            //thumbnail.style.width = `${videoWidthPx}px`;
+            //thumbnail.style.height = `${videoHeightPx}px`;
+            thumbnail.src = `https://img.youtube.com/vi/${curVideoId}/sddefault.jpg`;
+
+            // play/pause button
+            const playButton = document.getElementById( 'playButton' );
+            playButton.addEventListener('click', function (event) {
+                if (event.target.innerText === 'play') {
+                    ytplayer.playVideo();
+                } else {
+                    ytplayer.pauseVideo();
+                }
+            });
+
+            // prev video button
+            const prevButton = document.getElementById( 'prevButton' );
+            prevButton.addEventListener('click', function (event) {
+                if (videoIndex > 0) {
+                    ytplayer.loadVideoById(window.playlistVideos[--videoIndex].id);
+                }
+            });
+
+            // next video button
+            const nextButton = document.getElementById( 'nextButton' );
+            nextButton.addEventListener('click', function (event) {
+                if (videoIndex < window.playlistVideos.length - 1) {
+                    ytplayer.loadVideoById(window.playlistVideos[++videoIndex].id);
+                }
+            });
+
+            // title
+            const title = document.getElementById( 'title' );
+            title.innerText = `${window.playlistVideos[videoIndex].title}`;
+            title.href = `https://www.youtube.com/watch?v=${curVideoId}`;
+            title.target = '_blank';
+
+            window.onPlayerStateChange = function (event) {
+                if (event.data === YT.PlayerState.PLAYING) {
+                    playing = true;
+                    playButton.innerText = 'pause';
+                    const url = ytplayer.getVideoUrl();
+                    const title = document.getElementById('title');
+                    const link = document.getElementById('videolink');
+                    const image = document.getElementById('thumbnail');
+                    title.innerText = window.playlistVideos[videoIndex].title;
+                    title.href = url;
+                    link.href = url;
+                    const id = window.playlistVideos[videoIndex].id;
+                    image.src = `https://img.youtube.com/vi/${id}/sddefault.jpg`
+                    image.style.opacity = 1;
+                } else if (event.data === YT.PlayerState.PAUSED) {
+                    playing = false;
+                    playButton.innerText = 'play';
+                    const image = document.getElementById('thumbnail');
+                    image.style.opacity = 0.5;
+                } else if (event.data === YT.PlayerState.ENDED) {
+                    // load next video
+                    if (videoIndex < window.playlistVideos.length - 1) {
+                        ytplayer.loadVideoById(window.playlistVideos[++videoIndex].id);
+                    } else {
+                        playing = false;
+                    }
+                }
+            }
+            window.onYouTubeIframeAPIReady = function () {
+                ytplayer = new YT.Player('ytplayer', {
+                    events: {
+                        'onStateChange': onPlayerStateChange
+                    }
+                });
+            };
+
+            // load iframe API
+            const tag = document.createElement('script');
+            tag.src = "https://www.youtube.com/iframe_api";
+            const firstScriptTag = document.getElementsByTagName('script')[0];
+            firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+        </script>
     </body>
 </html>
