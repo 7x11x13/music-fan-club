@@ -336,7 +336,12 @@
                 slider.max = '100';
                 slider.value = '100';
                 slider.addEventListener('input', function(event) {
-                    ytplayer.setVolume(event.target.valueAsNumber);
+                    const x = event.target.valueAsNumber / 100;
+                    const a = 0.02;
+                    const b = Math.log(1 + 1/a);
+                    const vol = 100 * a * (Math.exp(b*x) - 1);
+                    console.log(vol);
+                    ytplayer.setVolume(Math.min(Math.max(0, vol), 100));
                 });
                 sliderDiv.appendChild( slider );
                 const sliderObject = new CSS3DObject( sliderDiv );
