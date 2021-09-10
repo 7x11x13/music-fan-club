@@ -142,12 +142,6 @@
     <body>
         <script src="./data/playlist.js"></script>
         <script type="module">
-            import * as THREE from 'https://threejs.org/build/three.module.js';
-            import { CSS3DRenderer, CSS3DObject } from 'https://threejs.org/examples/jsm/renderers/CSS3DRenderer.js';
-            import { EffectComposer } from 'https://threejs.org/examples/jsm/postprocessing/EffectComposer.js';
-            import { RenderPass } from 'https://threejs.org/examples/jsm/postprocessing/RenderPass.js';
-            import { OutlinePass } from 'https://threejs.org/examples/jsm/postprocessing/OutlinePass.js';
-            import { AfterimagePass } from 'https://threejs.org/examples/jsm/postprocessing/AfterimagePass.js';
 
             function onMobileOrTablet() {
                 let check = false;
@@ -155,7 +149,17 @@
                 return check;
             };
 
-            let mobile = onMobileOrTablet();
+            if (onMobileOrTablet()) {
+                window.location.replace = 'https://m.officialmusicfan.club';
+            }
+
+            import * as THREE from 'https://threejs.org/build/three.module.js';
+            import { CSS3DRenderer, CSS3DObject } from 'https://threejs.org/examples/jsm/renderers/CSS3DRenderer.js';
+            import { EffectComposer } from 'https://threejs.org/examples/jsm/postprocessing/EffectComposer.js';
+            import { RenderPass } from 'https://threejs.org/examples/jsm/postprocessing/RenderPass.js';
+            import { OutlinePass } from 'https://threejs.org/examples/jsm/postprocessing/OutlinePass.js';
+            import { AfterimagePass } from 'https://threejs.org/examples/jsm/postprocessing/AfterimagePass.js';
+
             let playing = false;
             let videoIndex = 0;
             let plane;
@@ -171,14 +175,7 @@
             const videoIDRegex = /[?&]v=([A-Za-z0-9_-]{11})/;
 
             window.addEventListener( 'resize', onWindowResize, false );
-            if (window.visualViewport != undefined) {
-                window.visualViewport.addEventListener( 'resize', onWindowResize, false);
-            }
-            window.addEventListener( 'orientationchange', onWindowResize, false );
             window.addEventListener( 'mousemove', onMouseMove, false );
-
-            const mqOrientation = window.matchMedia("(orientation: portrait)");
-            mqOrientation.addListener(function() { onWindowResize(); });
 
             function getStarColor() {
                 if (Math.random() > 0.9) {
@@ -424,7 +421,7 @@
                 composer.addPass( outlinePass );
                 composer.addPass( new AfterimagePass() );
                 
-                if (!mobile) initStars();
+                initStars();
 
                 onWindowResize();
             }
@@ -484,7 +481,6 @@
             }
 
             function onMouseMove(event) {
-                if (mobile) return;
                 const size = new THREE.Vector2();
                 renderer.getSize(size);
                 const width = size.x;
