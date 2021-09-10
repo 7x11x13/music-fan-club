@@ -171,6 +171,7 @@
             const videoIDRegex = /[?&]v=([A-Za-z0-9_-]{11})/;
 
             window.addEventListener( 'resize', onWindowResize, false );
+            window.addEventListener( 'orientationchange', onWindowResize, false );
             window.addEventListener( 'mousemove', onMouseMove, false );
 
             function getStarColor() {
