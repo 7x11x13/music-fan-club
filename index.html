@@ -170,7 +170,11 @@
             const videoHeightPx = 360;
             const videoIDRegex = /[?&]v=([A-Za-z0-9_-]{11})/;
 
-            window.addEventListener( 'resize', onWindowResize, false );
+            if (window.visualViewport != undefined) {
+                window.visualViewport.addEventListener( 'resize', onWindowResize, false);
+            } else {
+                window.addEventListener( 'resize', onWindowResize, false );
+            }
             window.addEventListener( 'orientationchange', onWindowResize, false );
             window.addEventListener( 'mousemove', onMouseMove, false );
 
@@ -445,10 +449,7 @@
 
             function onWindowResize() {
                 let width, height;
-                if (document.documentElement.clientWidth != undefined) {
-                    width = document.documentElement.clientWidth;
-                    height = document.documentElement.clientHeight;
-                } else if (window.visualViewport != undefined) {
+                if (window.visualViewport != undefined) {
                     width = window.visualViewport.width;
                     height = window.visualViewport.height;
                 } else {
