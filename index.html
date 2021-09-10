@@ -170,10 +170,9 @@
             const videoHeightPx = 360;
             const videoIDRegex = /[?&]v=([A-Za-z0-9_-]{11})/;
 
+            window.addEventListener( 'resize', onWindowResize, false );
             if (window.visualViewport != undefined) {
                 window.visualViewport.addEventListener( 'resize', onWindowResize, false);
-            } else {
-                window.addEventListener( 'resize', onWindowResize, false );
             }
             window.addEventListener( 'orientationchange', onWindowResize, false );
             window.addEventListener( 'mousemove', onMouseMove, false );
