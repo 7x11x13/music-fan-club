@@ -1,4 +1,12 @@
 playlistVideos = [
+    {id: '9g7VCSOq7ts', title: 'Rigsmal - Thoughts (感想)'},
+    {id: 'STZust-Tohk', title: 'Rigsmal - ヘッドロック (Headlock)'},
+    {id: 'bGao9EeCxWA', title: 'Rigsmal - タンジェリン (Tangerine)'},
+    {id: 'eIUaWuYkjEk', title: 'Rigsmal - 世紀 (Centuary)'},
+    {id: 'bRIyx6M1tpU', title: 'DJ Delph - Missed (SeyNoe Bootleg)'},
+    {id: 'q2s9wS64tYQ', title: 'METAROOM - WORM RAVE (SeyNoe Bootleg)'},
+    {id: '7QIbaIV6kAk', title: 'SeyNoe - VVVV'},
+    {id: 'Dh0fPwrUDUY', title: 'Ana Jikia - em (reasonable ground of speculation, rotatory and spacious)'},
     {id: 'fZgNwPgul-c', title: '92歳 - B With U'},
     {id: 'I8fNxg_QlwA', title: 'CatgirlCultist - loop loop'},
     {id: 'OxBhRV7SCUY', title: '✧✦ - lowerlvl'},
