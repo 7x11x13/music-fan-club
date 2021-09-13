@@ -242,6 +242,7 @@
 
                 window.onPlayerStateChange = function (event) {
                     if (event.data === YT.PlayerState.PLAYING) {
+                        ytplayer.setVolume(volume);
                         playing = true;
                         playButton.innerText = 'pause';
                         const url = ytplayer.getVideoUrl();
@@ -263,7 +264,6 @@
                         // load next video
                         if (videoIndex < window.playlistVideos.length - 1) {
                             ytplayer.loadVideoById(window.playlistVideos[++videoIndex].id);
-                            ytplayer.setVolume(volume);
                         } else {
                             playing = false;
                         }
