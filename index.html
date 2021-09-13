@@ -215,7 +215,7 @@
                     const a = 0.02;
                     const b = Math.log(1 + 1/a);
                     volume = 100 * a * (Math.exp(b*x) - 1);
-                    volume = Math.min(Math.max(0, vol), 100);
+                    volume = Math.min(Math.max(0, volume), 100);
                     ytplayer.setVolume(volume);
                 });
                 sliderDiv.appendChild( slider );
