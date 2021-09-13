@@ -37,6 +37,7 @@
             let CSSplane;
             let planeXRot = 0;
             let planeYRot = 0;
+            let volume = 100;
             let scene, CSSscene, camera, renderer, CSSrenderer, composer, ytplayer, ytEmbedObject;
             let stars = [];
 
@@ -213,8 +214,9 @@
                     const x = event.target.valueAsNumber / 100;
                     const a = 0.02;
                     const b = Math.log(1 + 1/a);
-                    const vol = 100 * a * (Math.exp(b*x) - 1);
-                    ytplayer.setVolume(Math.min(Math.max(0, vol), 100));
+                    volume = 100 * a * (Math.exp(b*x) - 1);
+                    volume = Math.min(Math.max(0, vol), 100);
+                    ytplayer.setVolume(volume);
                 });
                 sliderDiv.appendChild( slider );
                 const sliderObject = new CSS3DObject( sliderDiv );
@@ -261,6 +263,7 @@
                         // load next video
                         if (videoIndex < window.playlistVideos.length - 1) {
                             ytplayer.loadVideoById(window.playlistVideos[++videoIndex].id);
+                            ytplayer.setVolume(volume);
                         } else {
                             playing = false;
                         }
