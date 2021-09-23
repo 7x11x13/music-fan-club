@@ -241,7 +241,7 @@
                 CSSplane.add( ytEmbedObject );
 
                 window.onPlayerStateChange = function (event) {
-					ytplayer.setVolume(volume);
+                    ytplayer.setVolume(volume);
                     if (event.data === YT.PlayerState.PLAYING) {
                         playing = true;
                         playButton.innerText = 'pause';
