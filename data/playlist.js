@@ -1,4 +1,8 @@
 playlistVideos = [
+    {id: 'opAvBjquYm4', title: 'cade parker - 4406'},
+    {id: 'zK_g_y6xDM4', title: 'cade parker - nocturna'},
+    {id: '01NL2-jdXg8', title: 'cade parker - Chick Fil-A Rave On 9/10/21'},
+    {id: 'hrtMhAqxJl0', title: 'Ghost World - computer hacker (the phantom menace)'},
     {id: 'NxeGYV1DaH0', title: 'cloutpics - stingray'},
     {id: 'w3bdj3hhQaE', title: 'kuriso - you bring me up'},
     {id: 'soiwx8pLwI0', title: 'ローズマリー - ↻↻۱‥𝔢тₕeᵣ!〜★〜❃*.װॱ ↝ աaｖ,𝔢\'ߪ࠷࠷2021・⌤'},
