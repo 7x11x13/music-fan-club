@@ -3,7 +3,7 @@ import json
 import subprocess
 
 url = "https://www.youtube.com/playlist?list=PLr9e7ejE5Qjmz0CPtB2uceFwHr3ncdlv1"
-output = subprocess.check_output(["youtube-dl", "-j", "--flat-playlist", url])
+output = subprocess.check_output(["yt-dlp", "-j", "--flat-playlist", url])
 playlist = "playlistVideos = [\n"
 for line in output.decode('utf-8').split('\n'):
     if line:
