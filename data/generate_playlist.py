@@ -8,7 +8,7 @@ playlist = "playlistVideos = [\n"
 for line in output.decode('utf-8').split('\n'):
     if line:
         video = json.loads(line)
-        title = video['title'].replace("'", "\\'")
+        title = video['title'].replace("\\", "\\\\").replace("'", "\\'")
         playlist += f"    {{id: '{video['id']}', title: '{title}'}},\n"
 playlist += "];\n"
 playlist += """function shuffle(array) {

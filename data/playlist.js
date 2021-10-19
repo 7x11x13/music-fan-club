@@ -440,7 +440,7 @@ playlistVideos = [
     {id: 'EIHw1yCRbaM', title: 'Meeno Wave - MEO'},
     {id: 'HbKOjUP-Ors', title: 'ACJI - lalala'},
     {id: 'wUPVDwtIvHE', title: 'ACJI - thugged_tool'},
-    {id: 'riCVERQqjfo', title: 'XX1KNIFE - R NН0ГD/\ н3 П()MНU K/\K R Z0BYT'},
+    {id: 'riCVERQqjfo', title: 'XX1KNIFE - R NН0ГD/\\ н3 П()MНU K/\\K R Z0BYT'},
     {id: '4CiMwktov7U', title: 'XX1KNIFE - ✧･ﾟ: *✧･ﾟ:* ⲇⲉⲣꞅⲉ𝛓𝛓ⲓⲟⲛ a̷d̷d̷i̷c̷t̷e̷y̷u̷ t̷e̷n̷a̷g̷y̷u̷ a̠̻͜r͕̦͓e͍͇△ｓｏⲕⲁⲱⲁⲓⲓₜᵣₐₛₕ(ꈍᴗꈍ)'},
     {id: 'uoXqFX-DR_I', title: 'SADWRIST - #次? • 次二'},
     {id: 'Qp2MC880Iy0', title: 'SADWRIST - ⓷ III.'},
