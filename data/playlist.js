@@ -1,4 +1,11 @@
 playlistVideos = [
+    {id: 'PBNqaZNxAO4', title: 'love life all the time - Bts 2'},
+    {id: 'E_PuJzwc6Ls', title: 'love life all the time - Sacrifice 2'},
+    {id: '5KsNIv3xOvk', title: 'a47c9890127 - Future experiences Lean induced Hallucinatory episode'},
+    {id: 'GksfhqML7H0', title: 'love life all the time - 全部ゆめ -   ⓦⓔ ⓢⓟⓞⓝⓖⓔ ⓑⓞⓑⓑⓘⓝ'},
+    {id: 'fS5KTcpqr8I', title: 'love life all the time - CLUB REMIX -  -  -  - [TEEN TITANS AMV]'},
+    {id: 'c4DaKjCh1eA', title: 'love life all the time - Illness'},
+    {id: 'Pc9SWOTbAXc', title: 'love life all the time - Bhad Bhabie'},
     {id: '-t1zDNpY6pg', title: 'geeked - sound'},
     {id: 'DajXqRDE2WY', title: 'geeked - remiiix'},
     {id: 'AJ_rNVfeXGA', title: 'geeked - popo'},

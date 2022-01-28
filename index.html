@@ -24,12 +24,12 @@
                 window.location.replace('/mobile');
             }
 
-            import * as THREE from 'https://threejs.org/build/three.module.js';
-            import { CSS3DRenderer, CSS3DObject } from 'https://threejs.org/examples/jsm/renderers/CSS3DRenderer.js';
-            import { EffectComposer } from 'https://threejs.org/examples/jsm/postprocessing/EffectComposer.js';
-            import { RenderPass } from 'https://threejs.org/examples/jsm/postprocessing/RenderPass.js';
-            import { OutlinePass } from 'https://threejs.org/examples/jsm/postprocessing/OutlinePass.js';
-            import { AfterimagePass } from 'https://threejs.org/examples/jsm/postprocessing/AfterimagePass.js';
+            import * as THREE from 'https://cdn.skypack.dev/three@0.127/build/three.module.js';
+            import { CSS3DRenderer, CSS3DObject } from 'https://cdn.skypack.dev/three@0.127/examples/jsm/renderers/CSS3DRenderer.js';
+            import { EffectComposer } from 'https://cdn.skypack.dev/three@0.127/examples/jsm/postprocessing/EffectComposer.js';
+            import { RenderPass } from 'https://cdn.skypack.dev/three@0.127/examples/jsm/postprocessing/RenderPass.js';
+            import { OutlinePass } from 'https://cdn.skypack.dev/three@0.127/examples/jsm/postprocessing/OutlinePass.js';
+            import { AfterimagePass } from 'https://cdn.skypack.dev/three@0.127/examples/jsm/postprocessing/AfterimagePass.js';
 
             let playing = false;
             let videoIndex = 0;
@@ -134,7 +134,6 @@
                 iframe.style.height = `${videoHeightPx}px`;
                 iframe.style.border = '0px';
                 iframe.src = `https://www.youtube.com/embed/${curVideoId}?rel=0&controls=0&autoplay=1&enablejsapi=1&playsinline=1`;
-                iframe.allow = 'accelerometer; autoplay; encrypted-media; gyroscope;';
                 div.appendChild( iframe );
                 ytEmbedObject = new CSS3DObject( div );
                 ytEmbedObject.visible = false;
